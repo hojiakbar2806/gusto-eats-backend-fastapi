@@ -4,8 +4,9 @@ from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, File, s
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from app.database import get_db
+from app.security import get_current_user
 from app.settings import settings
-from app.schemas import ProductResponse, ProductListResponse
+from app.schemas import ProductResponse, ProductListResponse, UserResponse
 from app.models import Product, Category
 from app.utils import is_valid_image, save_image
 
@@ -22,7 +23,8 @@ async def create_product(
     count_in_stock: int = Form(...),
     category_id: int = Form(...),
     image: UploadFile = File(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UserResponse = Depends(get_current_user)
 ):
     if image and not is_valid_image(image):
         return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid image. Allowed types: jpeg, png. Max size: 5 MB",)
@@ -44,7 +46,7 @@ async def create_product(
 
     file_location = save_image(
         image, name=db_product.name, dir=settings.PRODUCT_DIR)
-    db_product.image = file_location
+    db_product.image = "/"+file_location
 
     db.add(db_product)
     db.commit()
@@ -78,7 +80,8 @@ async def update_product(
     count_in_stock: int = Form(None),
     category_id: int = Form(None),
     image: UploadFile = File(None),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UserResponse = Depends(get_current_user)
 ):
 
     db_product = db.query(Product).filter(Product.id == product_id).first()
@@ -107,7 +110,7 @@ async def update_product(
             return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid image. Allowed types: jpeg, png. Max size: 5 MB",)
         file_location = save_image(
             image, name=db_product.name, dir=settings.PRODUCT_DIR)
-        db_product.image = file_location
+        db_product.image = "/"+file_location
 
     db.commit()
     db.refresh(db_product)

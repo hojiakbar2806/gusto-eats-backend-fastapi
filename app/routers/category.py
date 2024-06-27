@@ -6,15 +6,15 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from app import models, database
 from app.settings import settings
-from app.utils import save_image
-from app.schemas import CategoryListResponse, CategoryResponse
-from app.utils import is_valid_image
+from app.utils import save_image, is_valid_image
+from app.schemas import CategoryListResponse, CategoryResponse, UserResponse
+from app.security import get_current_user
 
 category_router = APIRouter(prefix="/categories", tags=['Categories'])
 
 
 @category_router.post("/create", status_code=status.HTTP_201_CREATED)
-async def create_category(name: str = Form(...), image: UploadFile = File(...), db: Session = Depends(database.get_db)):
+async def create_category(name: str = Form(...), image: UploadFile = File(...), db: Session = Depends(database.get_db), current_user: UserResponse = Depends(get_current_user)):
     if image and not is_valid_image(image):
         return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid image. Allowed types: jpeg, png. Max size: 5 MB",)
 
@@ -23,7 +23,7 @@ async def create_category(name: str = Form(...), image: UploadFile = File(...), 
 
     db_category = models.Category(
         name=name,
-        image_path=file_location
+        image_path="/"+file_location
     )
 
     db.add(db_category)
@@ -57,7 +57,8 @@ async def update_category(category_id: int, name: str = Form(None), image: Uploa
         models.Category.id == category_id).first()
 
     if not db_category:
-        raise HTTPException(status_code=404, detail=f"Category {category_id} not found")
+        raise HTTPException(status_code=404, detail=f"Category {
+                            category_id} not found")
 
     if name:
         db_category.name = name
@@ -85,7 +86,8 @@ async def delete_category(category_id: int, db: Session = Depends(database.get_d
     db_category = category_query.first()
 
     if not db_category:
-        raise HTTPException(status_code=404, detail=f"Category {category_id} not found")
+        raise HTTPException(status_code=404, detail=f"Category {
+                            category_id} not found")
 
     if os.path.exists(db_category.image_path):
         os.remove(db_category.image_path)

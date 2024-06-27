@@ -16,6 +16,7 @@ class User(Base):
     last_name = Column(String, nullable=True)
     role = Column(Enum(Roles), default="user")
     reviews = relationship("Review", back_populates="user")
+    orders = relationship("Order", back_populates="user")
 
 
 

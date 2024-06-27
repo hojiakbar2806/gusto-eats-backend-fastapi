@@ -6,7 +6,8 @@ import shutil
 def save_image(image: UploadFile, name: str, dir: str):
     try:
         file_name, file_ext = os.path.splitext(image.filename)
-        file_location = f"{dir}/{name}_{file_name}{file_ext}"
+        print(file_ext)
+        file_location = f"{dir}/{name}{file_ext}"
         with open(file_location, "wb") as file_object:
             shutil.copyfileobj(image.file, file_object)
         return file_location

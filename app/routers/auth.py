@@ -112,11 +112,12 @@ async def get_user_info(token: str, db: Session = Depends(get_db)):
     try:
         token_data, expire_time = verify_access_token(
             token=token, credentials_exception=credentials_exception, db=db)
-        user = db.query(User).filter(
-            User.phone_number == token_data.phone_number).first()
+        print(token_data)
+        user = db.query(User).filter(User.phone_number ==
+                                     token_data.phone_number).first()
         if user is None:
             raise credentials_exception
 
-        return JSONResponse(status_code=status.HTTP_200_OK, content={"user": user, "expire": expire_time})
+        return {"user": user, "expire": expire_time}
     except HTTPException as e:
         raise e

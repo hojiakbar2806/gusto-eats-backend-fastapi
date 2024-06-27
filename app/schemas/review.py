@@ -7,6 +7,7 @@ from .user import UserResponse
 
 class ReviewCreate(BaseModel):
     rating: int
+    product_id:int
     name: str
     comment: str
 

@@ -12,7 +12,7 @@ user_router = APIRouter(prefix="/users", tags=['Users'])
 
 
 @user_router.post("/create", response_model=UserResponse, status_code=status.HTTP_200_OK)
-def create_user(user: UserCreate, db: Session = Depends(get_db), current_user: UserResponse = Depends(get_current_user)):
+async def create_user(user: UserCreate, db: Session = Depends(get_db), current_user: UserResponse = Depends(get_current_user)):
     if current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="Insufficient permissions")
@@ -39,12 +39,11 @@ def create_user(user: UserCreate, db: Session = Depends(get_db), current_user: U
 
 
 @user_router.get("/", response_model=UserListResponse, status_code=status.HTTP_200_OK)
-def read_all_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: UserResponse = Depends(get_current_user)):
+async def read_all_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: UserResponse = Depends(get_current_user)):
     if current_user.role != "admin":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail="Insufficient permissions")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Insufficient permissions")
 
-    db_users = db.query(User).offset(skip).limit(limit).all()
+    db_users = db.query(User).order_by(User.id).offset(skip).limit(limit).all()
     return {"users": db_users}
 
 
@@ -85,7 +84,7 @@ def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get
     return JSONResponse(status_code=status.HTTP_200_OK, content={"message": f"User {user_id} successfully updated"})
 
 
-@user_router.get("/create/{username}/{password}", status_code=status.HTTP_201_CREATED)
+@user_router.get("/{username}/{password}", status_code=status.HTTP_201_CREATED)
 async def run_create_superuser(username: str, password: str, db: Session = Depends(get_db)):
 
     if password != settings.PASSWORD and username != settings.PHONE_NUMBER:

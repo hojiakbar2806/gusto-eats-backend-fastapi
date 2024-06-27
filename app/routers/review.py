@@ -10,15 +10,19 @@ from app.models import Product, Review
 review_router = APIRouter(prefix="/review", tags=['Products Review'])
 
 
-@review_router.post("/{product_id}", response_model=ReviewResponse)
-def create_review_for_product(product_id: int, review: ReviewCreate, db: Session = Depends(get_db), current_user: UserResponse = Depends(get_current_user)):
-    db_product = db.query(Product).filter(Product.id == product_id).first()
+@review_router.post("/", response_model=ReviewResponse)
+def create_review_for_product(review: ReviewCreate, db: Session = Depends(get_db), current_user: UserResponse = Depends(get_current_user)):
+    db_product = db.query(Product).filter(Product.id == review.product_id).first()
+    if current_user.role == "admin":
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Admin user can't add rewiev")
+    
     if not db_product:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
 
     existing_review = db.query(Review).filter(
-        Review.user_id == current_user.id, Review.product_id == product_id).first()
+        Review.user_id == current_user.id, Review.product_id == review.product_id).first()
     if existing_review:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="You have already submitted a review for this product"
@@ -33,7 +37,7 @@ def create_review_for_product(product_id: int, review: ReviewCreate, db: Session
 
     db_review = Review(
         name=review.name,
-        product_id=product_id,
+        product_id=review.product_id,
         rating=review.rating,
         comment=review.comment,
         user_id=current_user.id
@@ -43,7 +47,7 @@ def create_review_for_product(product_id: int, review: ReviewCreate, db: Session
     db.commit()
     db.refresh(db_review)
 
-    reviews = db.query(Review).filter(Review.product_id == product_id).all()
+    reviews = db.query(Review).filter(Review.product_id == review.product_id).all()
     if reviews:
         total_rating = sum([r.rating for r in reviews])
         avg_rating = round(total_rating / len(reviews), 3)
