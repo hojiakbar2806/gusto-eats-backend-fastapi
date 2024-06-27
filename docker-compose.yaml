@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  nudges:
+    build: .
+    command: uvicorn app.main:app --host 0.0.0.0 --port 80
+    volumes:
+      - .:/usr/src/gusto-eats
+    ports:
+      - 80:80
+    depends_on:
+      - db
+
+  db:
+    image: postgres:gusto-eats
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=gusto-eats
+    expose: 
+      - 5433
+
+volumes:
+  postgres_data:
