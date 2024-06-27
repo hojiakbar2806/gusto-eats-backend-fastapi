@@ -45,8 +45,7 @@ async def get_category(category_id: int, db: Session = Depends(database.get_db))
         models.Category.id == category_id).first()
 
     if not db_category:
-        raise HTTPException(status_code=404, detail=f"Category {
-                            category_id} not found")
+        raise HTTPException(detail=f"Category {category_id} not found")
 
     return db_category
 
@@ -57,16 +56,14 @@ async def update_category(category_id: int, name: str = Form(None), image: Uploa
         models.Category.id == category_id).first()
 
     if not db_category:
-        raise HTTPException(status_code=404, detail=f"Category {
-                            category_id} not found")
+        raise HTTPException(detail=f"Category {category_id} not found")
 
     if name:
         db_category.name = name
 
     if image:
         os.makedirs(settings.CATEGORY_DIR, exist_ok=True)
-        image_path = f"{
-            settings.CATEGORY_DIR}/{db_category.name}_{image.filename}"
+        image_path = f"{settings.CATEGORY_DIR}/{db_category.name}_{image.filename}"
 
         with open(image_path, "wb") as file_object:
             shutil.copyfileobj(image.file, file_object)
@@ -86,8 +83,7 @@ async def delete_category(category_id: int, db: Session = Depends(database.get_d
     db_category = category_query.first()
 
     if not db_category:
-        raise HTTPException(status_code=404, detail=f"Category {
-                            category_id} not found")
+        raise HTTPException(detail=f"Category {category_id} not found")
 
     if os.path.exists(db_category.image_path):
         os.remove(db_category.image_path)

@@ -1,18 +1,19 @@
-# Use the latest Python image from Docker Hub
-FROM python:latest
+# Dockerfile for FastAPI service
+FROM python:3.9-slim
 
-# Set working directory inside the container
-WORKDIR /src
-
-# Set environment variables to prevent Python from writing byte code and buffering output
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+WORKDIR /app
 
 # Copy requirements.txt to the container
-COPY requirements.txt requirements.txt
+COPY requirements.txt .
 
-# Install dependencies from requirements.txt
-RUN pip3 install --no-cache-dir --upgrade -r requirements.txt
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire application directory to the container
-COPY ./app app/
+# Copy the rest of the application code
+COPY . .
+
+# Expose port for FastAPI
+EXPOSE 8000
+
+# Command to run FastAPI server
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

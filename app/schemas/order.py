@@ -18,7 +18,7 @@ class OrderItemSchema(BaseModel):
     product: ProductResponse
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class OrderResponseSchema(BaseModel):
@@ -29,9 +29,9 @@ class OrderResponseSchema(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class OrdersResponseSchema(BaseModel):
-    total_price:float
+    total_price: float
     orders: List[OrderResponseSchema]

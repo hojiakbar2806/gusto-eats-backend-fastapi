@@ -9,10 +9,10 @@ from app.schemas import OrderCreateSchema, OrderResponseSchema, UserResponse
 from app.schemas.order import OrdersResponseSchema
 from app.security import get_current_user
 
-order_route = APIRouter(tags=['Orders'], prefix="/orders")
+order_router = APIRouter(tags=['Orders'], prefix="/orders")
 
 
-@order_route.post("/create", response_model=OrderResponseSchema)
+@order_router.post("/create", response_model=OrderResponseSchema)
 async def create_order(
     order_data: OrderCreateSchema,
     db: Session = Depends(get_db),
@@ -74,7 +74,7 @@ async def create_order(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@order_route.get("/", response_model=OrdersResponseSchema)
+@order_router.get("/", response_model=OrdersResponseSchema)
 async def read_orders(db: Session = Depends(get_db), current_user: UserResponse = Depends(get_current_user)):
     try:
         if current_user.role == "admin":
