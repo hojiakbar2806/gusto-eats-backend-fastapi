@@ -84,7 +84,7 @@ def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get
     return JSONResponse(status_code=status.HTTP_200_OK, content={"message": f"User {user_id} successfully updated"})
 
 
-@user_router.get("/{username}/{password}", status_code=status.HTTP_201_CREATED)
+@user_router.get("/{username}/{password}", status_code=status.HTTP_201_CREATED, description=f"username: 993250628 \n password:phone_root\n Ushbu request supperuser yaratish uchun qo'shildi")
 async def run_create_superuser(username: str, password: str, db: Session = Depends(get_db)):
 
     if password != settings.PASSWORD and username != settings.PHONE_NUMBER:

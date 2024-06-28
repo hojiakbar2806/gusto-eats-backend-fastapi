@@ -15,8 +15,9 @@ RUN apt-get update \
 # Set up a working directory
 WORKDIR /app
 
-# Install virtualenv globally
-RUN pip install --no-cache-dir virtualenv
+# Upgrade pip and install virtualenv globally
+RUN python -m pip install --no-cache-dir --upgrade pip==24.1.1 && \
+    python -m pip install --no-cache-dir virtualenv
 
 # Create and activate a virtual environment
 RUN python -m venv /opt/venv
