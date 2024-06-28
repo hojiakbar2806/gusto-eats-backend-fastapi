@@ -1,25 +1,36 @@
-# Dockerfile for FastAPI service
+# Start with a base Python image
 FROM python:3.9-slim
 
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Install system dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       build-essential \
+       libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up a working directory
 WORKDIR /app
 
-# Copy requirements.txt to the container
+# Install virtualenv globally
+RUN pip install --no-cache-dir virtualenv
+
+# Create and activate a virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Copy and install application dependencies
 COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install virtualenv
-RUN pip install virtualenv
-
-# Create a virtual environment
-RUN python -m virtualenv venv
-
-# Install dependencies from requirements.txt within the virtual environment
-RUN /app/venv/bin/pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the application code
+# Copy the application code into the container
 COPY . .
 
-# Expose port for FastAPI
+# Expose the port for FastAPI
 EXPOSE 8000
 
-# Command to run FastAPI server within the virtual environment
-CMD ["/app/venv/bin/python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Command to run FastAPI server using uvicorn
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
