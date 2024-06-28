@@ -1,21 +1,13 @@
-version: '3'  # Updated to a supported version
-
 services:
   fastapi:
     build: .
     ports:
       - "8000:8000"
     environment:
-      DB_HOSTNAME: ${DB_HOSTNAME}
       DB_PORT: ${DB_PORT}
-      DB_PASSWORD: ${DB_PASSWORD}
+      DB_PASS: ${DB_PASS}
       DB_NAME: ${DB_NAME}
-      DB_USERNAME: ${DB_USERNAME}
-      SECRET_KEY: ${SECRET_KEY}
-      ALGORITHM: ${ALGORITHM}
-      ACCESS_TOKEN_EXPIRE_MINUTS: ${ACCESS_TOKEN_EXPIRE_MINUTS}
-      PHONE_NUMBER: ${PHONE_NUMBER}
-      PASSWORD: ${PASSWORD}
+      DB_USER: ${DB_USER}
     volumes:
       - .:/app
     depends_on:
@@ -24,11 +16,11 @@ services:
   db:
     image: postgres:latest
     environment:
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
       POSTGRES_DB: ${DB_NAME}
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:${DB_PORT}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

@@ -3,11 +3,11 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    DB_HOSTNAME: str
+    DB_HOST: str
     DB_PORT: int
-    DB_PASSWORD: str
+    DB_PASS: str
     DB_NAME: str
-    DB_USERNAME: str
+    DB_USER: str
     SECRET_KEY: str
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTS: int
@@ -32,6 +32,12 @@ class Settings(BaseSettings):
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
         return dir_path
+
+    # SQLALCHEMY_DATABASE_URL = f"postgresql://:root@db:5432/fastapi"
+
+    @property
+    def SQLALCHEMY_DATABASE_URL(self):
+        return f"postgresql://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
     class Config:
         env_file = ".env"
