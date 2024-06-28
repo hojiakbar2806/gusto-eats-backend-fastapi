@@ -24,7 +24,7 @@ jobs:
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            cd /path/to/your/project  # Adjust the path to your project on the server
+            cd /path/to/your/project  # Adjust to your actual project path
             git pull origin main      # Pull the latest changes from the main branch
             docker-compose down       # Stop existing containers
             docker-compose up -d --build  # Recreate and start containers in detached mode
