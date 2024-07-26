@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Telegram Web App{% endblock %}
+
+{% block content %}
+<body onload="initPage()">
+<nav>
+    <img width="120px" src="/static/icons/logo.svg" alt="Logo">
+    <button class="basket_btn" onclick="openCartModal()">
+        <img width="25px" src="/static/icons/basket.svg" alt="Basket">
+        <span id="cartQuantity">0</span> <!-- Display cart quantity here -->
+    </button>
+</nav>
+
+<!-- Modal for displaying cart items -->
+<div id="cartModal" class="modal">
+    <div class="modal-content">
+        <!-- Call clearCart function -->
+        <div>
+            <div><h2>Your Basket</h2></div>
+            <span class="close" onclick="closeCartModal()">X</span>
+        </div>
+
+        <table id="cartList">
+            <thead>
+            <tr>
+                <td>Name</td>
+                <td>Image</td>
+                <td>Quantity</td>
+                <td>Price</td>
+            </tr>
+            </thead>
+            <tbody id="tbody">
+
+            </tbody>
+        </table>
+        <div class="total_wrapper">
+            <button onclick="clearCart()">Clear Cart</button>
+            <p>Total Price: <span id="totalPriceDisplay">0</span></p>
+        </div>
+    </div>
+</div>
+
+<div id="container">
+    <div class="comp-container">
+        <div class="empty_box">
+            <h2>Mahsulot yo'q</h2>
+        </div>
+        {% for product in products %}
+        <div class="product_items comp-container">
+            <figure>
+                <img src="{{ product.image }}" alt="{{ product.name }}">
+            </figure>
+            <div>
+                <p>Name: {{ product.name }}</p>
+                <p>Price: {{ product.price }}</p>
+            </div>
+            <button id="cart_button-{{ product.id }}" onclick='addToCart(`{{ product | tojson | safe }}`)'>
+                Add to Cart
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+</body>
+{% endblock %}

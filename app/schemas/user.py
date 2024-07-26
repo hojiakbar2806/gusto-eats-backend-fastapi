@@ -1,16 +1,18 @@
-from enum import Enum
-from typing import List, Optional
-from pydantic import BaseModel
-from .mixin import Roles
 from datetime import datetime
+from typing import List, Optional
+
+from pydantic import BaseModel
+
+from .mixin import Roles
 
 
 class UserCreate(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+    chat_id: Optional[int] = None
     phone_number: int
     password: str
-    role: Roles = "user"
+    gender: str
 
 
 class UserResponse(BaseModel):
@@ -18,7 +20,6 @@ class UserResponse(BaseModel):
     first_name: Optional[str]
     last_name: Optional[str]
     phone_number: int
-    role: Roles = "user"
     is_active: bool
 
     class Config:

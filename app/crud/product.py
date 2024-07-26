@@ -1,22 +1,52 @@
-from sqlalchemy.orm import Session
-from app import models, schemas
+import os
+from typing import Optional
 
-def create_product(db: Session, product: schemas.ProductCreate):
-    db_product = models.Product(**product.dict())
-    db.add(db_product)
-    db.commit()
-    db.refresh(db_product)
-    return db_product
+from fastapi import HTTPException, status
+from fastapi.responses import JSONResponse
+from sqlalchemy import desc
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
 
-def get_product(db: Session, product_id: int):
-    return db.query(models.Product).filter(models.Product.id == product_id).first()
+from app.core.config import settings
+from app.models import Product
 
-def get_products(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(models.Product).offset(skip).limit(limit).all()
 
-def create_product_image(db: Session, product_id: int, file_path: str):
-    db_image = models.ProductImage(product_id=product_id, file_path=file_path)
-    db.add(db_image)
-    db.commit()
-    db.refresh(db_image)
-    return db_image
+async def get_all_products(db: AsyncSession):
+    db_products = await db.execute(
+        select(Product).options(selectinload(Product.category), selectinload(Product.reviews))
+    )
+    return db_products.scalars().all()
+
+
+async def get_product(product_id: int, db: AsyncSession) -> Optional[Product]:
+    db_product = await db.execute(
+        select(Product).options(selectinload(Product.category), selectinload(Product.reviews)).where(
+            Product.id == product_id)
+    )
+    return db_product.scalar_one_or_none()
+
+
+async def get_top_rated_products(db: AsyncSession):
+    db_products = await db.execute(
+        select(Product).order_by(desc(Product.average_rating)).options(selectinload(Product.category),
+                                                                       selectinload(Product.reviews))
+    )
+    return db_products.scalars().all()
+
+
+async def delete_product(product_id: int, db: AsyncSession) -> JSONResponse:
+    async with db.begin():
+        db_product = await db.execute(select(Product).where(Product.id == product_id))
+        db_product = db_product.scalar_one_or_none()
+        if not db_product:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Mahsulot topilmadi")
+
+        if db_product.image and os.path.exists(os.path.join(settings.PRODUCT_DIR, db_product.image)):
+            os.remove(os.path.join(settings.PRODUCT_DIR, db_product.image))
+
+        db.delete(db_product)
+        await db.commit()
+
+    return JSONResponse(status_code=status.HTTP_204_NO_CONTENT,
+                        content={"message": f"Mahsulot {product_id} muvaffaqiyatli o'chirildi"})

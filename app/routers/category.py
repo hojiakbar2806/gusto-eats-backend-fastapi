@@ -1,94 +1,106 @@
-import os
-import shutil
-from typing import List
 from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, File, status
 from fastapi.responses import JSONResponse
-from sqlalchemy.orm import Session
-from app import models, database
-from app.settings import settings
-from app.utils import save_image, is_valid_image
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.bot.helper import clean_string
+from app.core.config import settings
+from app.core.security import get_current_user
+from app.crud import get_categories, get_category, delete_category
+from app.db.base import get_async_session
+from app.models import Category
 from app.schemas import CategoryListResponse, CategoryResponse, UserResponse
-from app.security import get_current_user
+from app.utils import save_image, is_valid_image
 
 category_router = APIRouter(prefix="/categories", tags=['Categories'])
 
 
 @category_router.post("/create", status_code=status.HTTP_201_CREATED)
-async def create_category(name: str = Form(...), image: UploadFile = File(...), db: Session = Depends(database.get_db), current_user: UserResponse = Depends(get_current_user)):
-    if image and not is_valid_image(image):
-        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid image. Allowed types: jpeg, png. Max size: 5 MB",)
+async def create_category_api(
+        name: str = Form(...),
+        image: UploadFile = File(...),
+        db: AsyncSession = Depends(get_async_session),
+        current_user: UserResponse = Depends(get_current_user)
+):
+    if not is_valid_image(image):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Noto'g'ri rasm. Ruxsat etilgan turlari: jpeg, png. Maksimal hajmi: 5 MB"
+        )
 
-    file_location = save_image(
-        image, name=name, dir=settings.CATEGORY_DIR)
+    file_location = await save_image(image, name=name, dir=settings.CATEGORY_DIR)
 
-    db_category = models.Category(
-        name=name,
-        image_path="/"+file_location
+    db_category = Category(
+        name=clean_string(name),
+        image_path=file_location
     )
-
     db.add(db_category)
-    db.commit()
-    db.refresh(db_category)
+    await db.commit()
+    await db.refresh(db_category)
 
-    return JSONResponse(status_code=status.HTTP_201_CREATED, content={"message": f"Category {db_category.id} successfully created"})
+    return JSONResponse(
+        status_code=status.HTTP_201_CREATED,
+        content={"message": f"Kategoriya {db_category.id} muvaffaqiyatli yaratildi"}
+    )
 
 
 @category_router.get("/", response_model=CategoryListResponse, status_code=status.HTTP_200_OK)
-async def get_categories(db: Session = Depends(database.get_db)):
-    db_category = db.query(models.Category).all()
-    return {"categories": db_category}
+async def get_categories_api(db: AsyncSession = Depends(get_async_session)):
+    db_categories = await get_categories(db)
+    return {"categories": db_categories}
 
 
 @category_router.get("/{category_id}", response_model=CategoryResponse, status_code=status.HTTP_200_OK)
-async def get_category(category_id: int, db: Session = Depends(database.get_db)):
-    db_category = db.query(models.Category).filter(
-        models.Category.id == category_id).first()
-
+async def get_category_api(category_id: int, db: AsyncSession = Depends(get_async_session)):
+    db_category = await get_category(db, category_id)
     if not db_category:
-        raise HTTPException(detail=f"Category {category_id} not found")
-
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Kategoriya {category_id} topilmadi"
+        )
     return db_category
 
 
 @category_router.patch("/{category_id}", response_model=CategoryResponse, status_code=status.HTTP_200_OK)
-async def update_category(category_id: int, name: str = Form(None), image: UploadFile = File(None), db: Session = Depends(database.get_db)):
-    db_category = db.query(models.Category).filter(
-        models.Category.id == category_id).first()
-
+async def update_category_api(
+        category_id: int,
+        name: str = Form(None),
+        image: UploadFile = File(None),
+        db: AsyncSession = Depends(get_async_session)
+):
+    db_category = await get_category(db, category_id)
     if not db_category:
-        raise HTTPException(detail=f"Category {category_id} not found")
-
-    if name:
-        db_category.name = name
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Kategoriya {category_id} topilmadi"
+        )
 
     if image:
-        os.makedirs(settings.CATEGORY_DIR, exist_ok=True)
-        image_path = f"{settings.CATEGORY_DIR}/{db_category.name}_{image.filename}"
+        if not is_valid_image(image):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Noto'g'ri rasm. Ruxsat etilgan turlari: jpeg, png. Maksimal hajmi: 5 MB"
+            )
+        file_location = await save_image(image, name=db_category.name, dir=settings.CATEGORY_DIR)
+        db_category.image_path = file_location
 
-        with open(image_path, "wb") as file_object:
-            shutil.copyfileobj(image.file, file_object)
+    if name:
+        db_category.name = clean_string(name)
 
-        db_category.image_path = image_path
+    await db.commit()
+    await db.refresh(db_category)
 
-    db.commit()
-    db.refresh(db_category)
-
-    return JSONResponse(status_code=status.HTTP_200_OK, content={"message": f"Category {db_category.id} successfully updated"})
+    return db_category
 
 
 @category_router.delete("/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_category(category_id: int, db: Session = Depends(database.get_db)):
-    category_query = db.query(models.Category).filter(
-        models.Category.id == category_id)
-    db_category = category_query.first()
-
-    if not db_category:
-        raise HTTPException(detail=f"Category {category_id} not found")
-
-    if os.path.exists(db_category.image_path):
-        os.remove(db_category.image_path)
-
-    category_query.delete(synchronize_session=False)
-    db.commit()
-
-    return JSONResponse(status_code=status.HTTP_200_OK, content={"message": f"Category {category_id} successfully deleted"})
+async def delete_category_api(category_id: int, db: AsyncSession = Depends(get_async_session)):
+    success = await delete_category(db, category_id)
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Kategoriya {category_id} topilmadi"
+        )
+    return JSONResponse(
+        status_code=status.HTTP_204_NO_CONTENT,
+        content={"message": f"Kategoriya {category_id} muvaffaqiyatli o'chirildi"}
+    )

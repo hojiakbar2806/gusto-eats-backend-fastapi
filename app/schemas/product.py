@@ -1,8 +1,10 @@
-from typing import List, Optional
-from pydantic import BaseModel
 from datetime import datetime
-from .review import ReviewResponse
+from typing import List, Optional
+
+from pydantic import BaseModel
+
 from .category import CategoryResponse
+from .review import ReviewResponse
 
 
 class ProductResponse(BaseModel):
@@ -15,10 +17,10 @@ class ProductResponse(BaseModel):
     discount: int
     count_in_stock: int
     total_review: int
-    created_at: datetime
-    category: Optional[CategoryResponse]
-    reviews: List[ReviewResponse]
     average_rating: int
+    created_at: datetime
+    category: CategoryResponse  # Update: category should be singular
+    reviews: List[ReviewResponse]
 
     class Config:
         from_attributes: True

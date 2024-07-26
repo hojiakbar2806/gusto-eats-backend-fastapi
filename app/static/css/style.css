@@ -1,0 +1,238 @@
+* {
+     margin: 0;
+     padding: 0;
+     box-sizing: border-box;
+}
+
+::-webkit-scrollbar{
+  display: none;
+}
+
+body {
+     width: 100%;
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     height: auto;
+     color: #333;
+     font-family: sans-serif;
+     position: relative;
+       background: #e9ecef;
+}
+
+body>nav {
+     width: 100%;
+     font-size: 22px;
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     padding: 10px 20px;
+     position: sticky;
+     top: 0;
+     background: #fff;
+     z-index: 100;
+       box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+}
+
+
+#container {
+     width:100%;
+     padding: 20px;
+}
+
+.comp-container {
+     width:100%;
+     display: grid;
+     grid-template-columns: 1fr 1fr;
+     border-radius: 5px;
+     gap: 15px;
+
+    padding: 15px;
+    margin: 0;
+    overflow: hidden;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+    background: #fff;
+    background: #fff;
+
+}
+
+
+
+.product_items {
+     border: 1px solid #fff;
+     padding: 20px;
+     display: grid;
+     grid-template-rows: auto 1fr auto;
+     grid-template-columns: auto;
+     align-items: center;
+     justify-content:center;
+     border-radius: 10px;
+     gap: 10px;
+}
+
+.product_items>div {
+     display: flex;
+     flex-direction: column;
+     gap: 5px;
+     font-size: 12px;
+}
+
+
+.product_items>figure {
+     width: 100%;
+}
+
+.product_items>figure>img {
+     width: 100%;
+}
+
+.product_items>button {
+     background: #1677ff;
+     border: 1px solid transparent;
+     font-size: 12px;
+     color: #fff;
+     padding: 5px;
+     width: 100%;
+     cursor: pointer;
+     border-radius: 5px;
+}
+
+.basket_btn {
+     background: transparent;
+     border: none;
+     cursor: pointer;
+     position: relative;
+}
+
+#cartQuantity {
+     width: 15px;
+     height: 15px;
+     position: absolute;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     top: -3px;
+     right: -5px;
+     border: 1px solid #fff;
+     background: rgb(50, 90, 200);
+     color: #fff;
+     border-radius: 50%;
+     font-size: 10px;
+     font-weight: bold;
+     margin-left: 5px;
+}
+
+
+/* Modal styles */
+.modal {
+     position: fixed;
+     width: 100%;
+     height: 100vh;
+     overflow:auto;
+     top: -200%;
+     background: #fff;
+     transition: all .3s ease;
+     z-index: 1002;
+     color:#000;
+}
+
+.modal-content {
+     width: 100%;
+     padding: 20px;
+}
+
+#cartList {
+     width: 100%;
+     border-collapse: collapse;
+     font-size: 12px;
+     margin-top: 20px;
+     margin-bottom: 20px;
+}
+
+thead>tr>td {
+     font-weight: bold;
+     font-size: 12px;
+     text-align: left;
+     padding-bottom: 10px;
+     border-top: 1px solid #fff;
+}
+
+td,
+th {
+     border-bottom: 1px solid #ccc;
+}
+
+table,
+td,
+th {
+     padding: 5px !important;
+}
+
+.modal-content>div {
+     display: flex;
+     position:sticky;
+     top:0px;
+     gap: 5px;
+     justify-content: space-between;
+     align-items: center;
+     font-size: 12px;
+     padding: 20px 0;
+     border-bottom:1px solid #ccc;
+      background:#fff;
+
+}
+
+.modal-content>div>button {
+     height: 30px;
+     width: 100px;
+     background: red;
+     border: 1px solid red;
+     font-size: 12px;
+     color: #fff;
+     cursor: pointer;
+     border-radius: 5px;
+}
+
+.modal-content>div>button:hover {
+     background: red;
+     color: #fff;
+     transition: 0.5s;
+}
+
+.modal-content>div>span {
+     width: 30px;
+     height: 30px;
+     font-size: 16px;
+     color: #fff;
+     background: red;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     border: 1px solid red;
+     border-radius: 5px;
+     cursor: pointer;
+}
+
+
+.modal-content>p {
+     font-size: 14px;
+     font-weight: bold;
+     padding: 10px 0;
+     text-align: right;
+     margin-bottom: 20px;
+}
+
+.total_wrapper{
+    position:sticky;
+    bottom:0;
+
+}
+
+.empty_box {
+    width: 100%;
+    display: grid;
+    place-items: center;
+    padding: 0 20px; /* Corrected from '0, 20px' to '0 20px' */
+}

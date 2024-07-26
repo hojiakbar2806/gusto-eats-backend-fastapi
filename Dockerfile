@@ -1,37 +1,26 @@
-# Start with a base Python image
-FROM python:3.9-slim
+# Use a base Python image
+FROM python:3.12-slim as python-base
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Install system dependencies
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-       build-essential \
-       libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-
 # Set up a working directory
-WORKDIR /app
+WORKDIR /python_tutorial
 
-# Upgrade pip and install virtualenv globally
-RUN python -m pip install --no-cache-dir --upgrade pip==24.1.1 && \
-    python -m pip install --no-cache-dir virtualenv
+# Copy pyproject.toml and poetry.lock files into the container
+COPY pyproject.toml poetry.lock* ./
 
-# Create and activate a virtual environment
-RUN python -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+# Install Poetry
+RUN pip install poetry \
+    && poetry config virtualenvs.create false \
+    && poetry install --no-dev
 
-# Copy and install application dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the application code into the container
+# Copy the rest of the application code
 COPY . .
 
 # Expose the port for FastAPI
 EXPOSE 8000
 
-# Command to run FastAPI server using uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Command to run FastAPI server using Gunicorn and Uvicorn
+CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "--bind", "0.0.0.0:8000"]
