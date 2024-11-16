@@ -1,5 +1,7 @@
+import logging
 from contextlib import asynccontextmanager
 
+from sqlalchemy.exc import ProgrammingError
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import declarative_base
 
@@ -22,6 +24,7 @@ async_session_maker = async_sessionmaker(
 Base = declarative_base()
 
 
+@asynccontextmanager
 async def get_async_session() -> AsyncSession:
     async_session_instance = async_session_maker()
     try:
@@ -29,14 +32,15 @@ async def get_async_session() -> AsyncSession:
     finally:
         await async_session_instance.close()
 
-@asynccontextmanager
-async def get_session():
-    async_session = async_session_maker()
+
+async def create_tables():
     try:
-        yield async_session
-        await async_session.commit()
-    except Exception as e:
-        await async_session.rollback()
-        raise e
-    finally:
-        await async_session.close()
+        async with async_engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+            logging.info("Database schema created successfully.")
+    except ProgrammingError as e:
+        if "duplicate table" in str(e):
+            logging.warning("Jadval allaqachon mavjud, e'tiborsiz qoldirilmoqda.")
+        else:
+            logging.error(f"Error creating tables: {e}")
+            raise e
