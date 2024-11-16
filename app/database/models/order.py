@@ -3,7 +3,7 @@ import enum
 from sqlalchemy import Column, Integer, ForeignKey, Float, Enum, DateTime, func
 from sqlalchemy.orm import relationship
 
-from app.db.base import Base
+from app.database.base import Base
 
 
 class OrderItem(Base):

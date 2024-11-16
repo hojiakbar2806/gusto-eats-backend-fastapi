@@ -4,7 +4,7 @@ from datetime import datetime
 from sqlalchemy import Column, DateTime, Integer, String, Boolean, BigInteger, Enum, func
 from sqlalchemy.orm import relationship
 
-from app.db.base import Base
+from app.database.base import Base
 
 
 class Gender(enum.Enum):

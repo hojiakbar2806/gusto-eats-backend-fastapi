@@ -1,7 +1,10 @@
 from datetime import datetime
+from enum import Enum
 from typing import List, Optional
 
 from pydantic import BaseModel
+
+from app.database.models.user import Gender
 
 from .mixin import Roles
 
@@ -12,7 +15,7 @@ class UserCreate(BaseModel):
     chat_id: Optional[int] = None
     phone_number: int
     password: str
-    gender: str
+    gender: Gender
 
 
 class UserResponse(BaseModel):
@@ -21,6 +24,8 @@ class UserResponse(BaseModel):
     last_name: Optional[str]
     phone_number: int
     is_active: bool
+    is_stuff: bool
+    is_superuser: bool
 
     class Config:
         from_attributes = True

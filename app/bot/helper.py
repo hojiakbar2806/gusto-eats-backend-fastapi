@@ -9,8 +9,8 @@ from sqlalchemy.orm import selectinload
 
 from app.bot import keyboards as kb
 from app.core.config import settings
-from app.db.base import get_session
-from app.models import Product, Order, OrderStatus, OrderItem, User
+from app.database.base import get_session
+from app.database.models import Product, Order, OrderStatus, OrderItem, User
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

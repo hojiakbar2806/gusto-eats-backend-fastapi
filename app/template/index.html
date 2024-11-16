@@ -42,10 +42,10 @@
 
 <div id="container">
     <div class="comp-container">
-        <div class="empty_box">
-            <h2>Mahsulot yo'q</h2>
-        </div>
-        {% for product in products %}
+        {% if not products %}
+        <h2>Mahsulot yo'q</h2>
+        {% else %}
+        {% endif %} {% for product in products %}
         <div class="product_items comp-container">
             <figure>
                 <img src="{{ product.image }}" alt="{{ product.name }}">
@@ -59,6 +59,7 @@
             </button>
         </div>
         {% endfor %}
+
     </div>
 </div>
 

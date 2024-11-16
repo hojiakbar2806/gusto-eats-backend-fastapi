@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import get_current_user
 from app.crud.order import create_order, get_orders, update_order, delete_order
-from app.db.base import get_async_session
+from app.database.base import get_async_session
 from app.schemas import OrderCreateSchema, OrderResponseSchema, OrdersResponseSchema, UserResponse
 
 order_router = APIRouter(tags=['Orders'], prefix="/orders")

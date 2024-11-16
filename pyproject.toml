@@ -61,6 +61,7 @@ asyncpg = "^0.29.0"
 greenlet = "^3.0.3"
 uvicorn = "^0.30.3"
 gunicorn = "^22.0.0"
+aiosqlite = "^0.20.0"
 
 
 [build-system]

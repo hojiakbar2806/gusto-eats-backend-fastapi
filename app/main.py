@@ -12,7 +12,7 @@ from app import routers
 from app.bot import set_update, bot, set_command
 from app.core.config import settings
 from app.crud import get_all_products
-from app.db.base import get_async_session, async_engine, Base
+from app.database.base import get_async_session, create_tables
 from app.utils.helper import serialize_product
 
 logging.basicConfig(level=logging.INFO)
@@ -46,9 +46,7 @@ async def on_startup():
             logger.info("Webhook set successfully.")
 
         # Create database schema
-        async with async_engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-            logger.info("Database schema created successfully.")
+        await create_tables()
     except Exception as e:
         logger.error(f"Failed to set up webhook or create database schema: {e}")
 

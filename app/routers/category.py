@@ -6,8 +6,8 @@ from app.bot.helper import clean_string
 from app.core.config import settings
 from app.core.security import get_current_user
 from app.crud import get_categories, get_category, delete_category
-from app.db.base import get_async_session
-from app.models import Category
+from app.database.base import get_async_session
+from app.database.models import Category
 from app.schemas import CategoryListResponse, CategoryResponse, UserResponse
 from app.utils import save_image, is_valid_image
 

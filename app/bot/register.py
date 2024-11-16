@@ -10,8 +10,8 @@ from app.bot import helper
 from app.bot import keyboards as kb
 from app.bot.state import DeleteUserState, RegisterState
 from app.core.hashing import get_password_hash, verify_password
-from app.db.base import get_session
-from app.models import User, Gender
+from app.database.base import get_session
+from app.database.models import User, Gender
 
 register = Router()
 

@@ -6,8 +6,8 @@ from sqlalchemy.future import select
 from sqlalchemy.sql import update
 
 from app.core.hashing import get_password_hash
-from app.db.base import get_async_session
-from app.models import User
+from app.database.base import get_session
+from app.database.models import User
 from app.schemas import UserCreate, UserUpdate
 
 
@@ -35,7 +35,7 @@ async def get_admins_chat_id(session: AsyncSession) -> Sequence[int]:
 
 
 async def promote_to_admin(chat_id: int) -> bool:
-    async with get_async_session() as session:
+    async with get_session() as session:
         stmt = update(User).where(User.chat_id == chat_id).values(is_admin=True)
         await session.execute(stmt)
         await session.commit()

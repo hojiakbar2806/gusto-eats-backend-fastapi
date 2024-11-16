@@ -229,10 +229,3 @@ th {
     bottom:0;
 
 }
-
-.empty_box {
-    width: 100%;
-    display: grid;
-    place-items: center;
-    padding: 0 20px; /* Corrected from '0, 20px' to '0 20px' */
-}

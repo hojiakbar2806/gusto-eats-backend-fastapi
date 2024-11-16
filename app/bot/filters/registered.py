@@ -2,7 +2,7 @@ from aiogram import types, Bot
 from aiogram.filters import Filter
 
 from app.crud import get_user_by_chat_id
-from app.db.base import get_session
+from app.database.base import get_session
 from app.bot import keyboards as kb
 
 

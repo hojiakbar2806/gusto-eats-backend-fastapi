@@ -6,8 +6,8 @@ from app.core.config import settings
 from app.core.hashing import get_password_hash
 from app.core.security import create_access_token, verify_access_token
 from app.crud import get_user_by_phone_number, create_user, update_user_inactive_status
-from app.db.base import get_async_session
-from app.models import BlacklistedToken, User
+from app.database.base import get_async_session
+from app.database.models import BlacklistedToken, User
 from app.schemas import UserCreate, UserMe, UserLogin
 
 auth_router = APIRouter(
@@ -109,7 +109,7 @@ async def create_superuser(username: int, password: str, db: AsyncSession = Depe
         hashed_password=hashed_password,
         is_superuser=True,
         is_active=True,
-        is_staff=True
+        is_stuff=True
     )
     db.add(new_user)
     await db.commit()

@@ -8,8 +8,8 @@ from sqlalchemy.future import select
 
 import app.bot.keyboards as kb
 from app.bot.helper import send_current_product, create_order, send_order, send_order_item
-from app.db.base import get_session
-from app.models import Product, User
+from app.database.base import get_session
+from app.database.models import Product, User
 
 order = Router()
 

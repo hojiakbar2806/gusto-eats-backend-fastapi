@@ -9,8 +9,8 @@ from app.bot.helper import clean_string
 from app.core.config import settings
 from app.core.security import get_current_user
 from app.crud.product import get_all_products, get_product, delete_product, get_top_rated_products
-from app.db.base import get_async_session
-from app.models import Category, Product
+from app.database.base import get_async_session
+from app.database.models import Category, Product
 from app.schemas import UserResponse, ProductListResponse, ProductResponse
 from app.utils import is_valid_image, save_image
 

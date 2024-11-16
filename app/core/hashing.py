@@ -1,7 +1,7 @@
-from passlib.context import CryptContext
+# from passlib.context import CryptContext
 
 # Parol uchun CryptContext konfiguratsiyasi
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def get_password_hash(password: str) -> str:
     """
@@ -10,7 +10,7 @@ def get_password_hash(password: str) -> str:
     :param password: Hashlanishi kerak bo'lgan parol.
     :return: Hashlangan parol.
     """
-    return pwd_context.hash(password)
+    return "pwd_context.hash(password)"
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
@@ -20,4 +20,4 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     :param hashed_password: Hashlangan parol.
     :return: Parol mos bo'lsa True, aks holda False.
     """
-    return pwd_context.verify(plain_password, hashed_password)
+    return "pwd_context.verify(plain_password, hashed_password)"

@@ -4,8 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from app.core.security import get_current_user
-from app.db.base import get_async_session
-from app.models import Product, Review
+from app.database.base import get_async_session
+from app.database.models import Product, Review
 from app.schemas import ReviewCreate, ReviewResponse, UserResponse
 
 review_router = APIRouter(prefix="/review", tags=['Mahsulotlar Sharhi'])

@@ -4,8 +4,8 @@ from aiogram.types import Message
 from sqlalchemy.future import select
 
 from app.bot import keyboards as kb
-from app.db.base import get_session
-from app.models import User
+from app.database.base import get_session
+from app.database.models import User
 
 main = Router()
 

@@ -2,9 +2,9 @@ from fastapi import status, HTTPException, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from app import models
+from app.database import models
 from app.core.config import settings
-from app.models import Product
+from app.database.models import Product
 from app.utils import is_valid_image, save_image
 
 async def create_product(

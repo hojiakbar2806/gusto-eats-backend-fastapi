@@ -9,7 +9,7 @@ from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 
 from app.core.config import settings
-from app.models import Product
+from app.database.models import Product
 
 
 async def get_all_products(db: AsyncSession):

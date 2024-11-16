@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.bot import bot
 from app.core.config import settings
-from app.models import Order, OrderItem, Product
+from app.database.models import Order, OrderItem, Product
 from app.schemas import OrderCreateSchema, UserResponse
 
 

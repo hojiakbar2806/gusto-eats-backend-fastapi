@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     DB_USER: str
     SECRET_KEY: str
     ALGORITHM: str
-    ACCESS_TOKEN_EXPIRE_MINUTS: int
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
     BOT_TOKEN: str
     WEBHOOK_URL: str
     PHONE_NUMBER: int = Field(..., description="Phone number with 998 prefix and 9 digits")
@@ -38,7 +38,12 @@ class Settings(BaseSettings):
 
     @property
     def SQLALCHEMY_DATABASE_URL(self) -> str:
-        return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+        return f"sqlite+aiosqlite:///{self.DB_NAME}.slqite"
+
+    # @property
+    # def SQLALCHEMY_DATABASE_URL(self) -> str:
+    #     # return "postgresql+asyncpg://hojiakbar:lcXuTof15he6NxBHbVNimeTSJeyehYE5@dpg-cqhmt9t6l47c73fqhb2g-a/gusto_db"
+    #     return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
     class Config:
         env_file = ".env"
